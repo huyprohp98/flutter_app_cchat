@@ -3,6 +3,7 @@ import 'package:flutter_app_cchat/app_config.dart';
 import 'package:flutter_app_cchat/model/api/dio_provider.dart';
 import 'package:flutter_app_cchat/model/local/barrel_local.dart';
 import 'package:flutter_app_cchat/model/repo/barrel_repo.dart';
+import 'package:flutter_app_cchat/presentation/menu/homefaild/category_product/bloc/post_category_product_bloc.dart';
 import 'package:flutter_app_cchat/presentation/router.dart';
 import 'package:flutter_app_cchat/presentation/screen/barrel_screen.dart';
 import 'package:flutter_app_cchat/presentation/screen/navigation/barrel_navigation.dart';
@@ -87,6 +88,10 @@ class MyApp extends StatefulWidget {
                 userRepository: userRepository,
                 sessionRepository: sessionRepository)
               ..add(AppInitialized()),
+          ),
+          BlocProvider(
+            create: (context) => PostCategoryProductBloc(
+                userRepository: userRepository),
           ),
         ],
         child: MyApp(),

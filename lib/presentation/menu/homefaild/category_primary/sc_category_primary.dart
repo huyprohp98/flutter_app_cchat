@@ -6,6 +6,7 @@ import 'package:flutter_app_cchat/presentation/common_widgets/barrel_common_widg
 import 'package:flutter_app_cchat/presentation/common_widgets/widget_appbar_main.dart';
 import 'package:flutter_app_cchat/presentation/common_widgets/widget_product_grid.dart';
 import 'package:flutter_app_cchat/presentation/menu/homefaild/category_product/bloc/post_category_product_bloc.dart';
+import 'package:flutter_app_cchat/presentation/menu/homefaild/category_product/bloc/post_category_product_event.dart';
 import 'package:flutter_app_cchat/presentation/menu/homefaild/category_product/bloc/post_category_product_state.dart';
 import 'package:flutter_app_cchat/presentation/menu/homefaild/home_bloc/home_bloc.dart';
 import 'package:flutter_app_cchat/presentation/menu/homefaild/home_bloc/home_state.dart';
@@ -55,6 +56,8 @@ class _CategoryPrimaryScreenState extends State<CategoryPrimaryScreen> {
       final Map arguments = ModalRoute.of(context).settings.arguments as Map;
       setState(() {
         _category = arguments['category'];
+        print("_______________");
+        print(_category);
 
         BlocProvider.of<CategoryPrimaryBloc>(context).add(LoadCategoryPrimary(
             _category, _size, _color, _priceBegin, _priceEnd));
@@ -66,9 +69,86 @@ class _CategoryPrimaryScreenState extends State<CategoryPrimaryScreen> {
   void initState() {
     super.initState();
     _onArgument();
+    BlocProvider.of<PostCategoryProductBloc>(context).add(LoadCategoryProduct());
   }
   @override
   Widget build(BuildContext context) {
+    return SafeArea(
+        child: BlocListener<PostCategoryProductBloc, PostCategoryProductState>(
+      listener: (context, state) async {
+        if (state.isLoading) {
+          await HttpHandler.resolve(status: state.status);
+        }
+
+        if (state.isSuccess) {
+          await HttpHandler.resolve(status: state.status);
+          print("_____________");
+          print(state.status);
+        }
+
+        if (state.isFailure) {
+          await HttpHandler.resolve(status: state.status);
+          print(state.status);
+        }
+      },
+      child: BlocBuilder<PostCategoryProductBloc, PostCategoryProductState>(
+        builder: (context, state) {
+          return Scaffold(
+            key: _drawerKey,
+            backgroundColor: Colors.white,
+            // endDrawer: WidgetProductFilter(
+            //   size: _size,
+            //   color: _color,
+            //   priceBegin: _priceBegin,
+            //   priceEnd: _priceEnd,
+            //   onSizeTap: (size) {
+            //     if (_size != size) {
+            //       setState(() {
+            //         _size = size;
+            //       });
+            //     } else {
+            //       setState(() {
+            //         _size = null;
+            //       });
+            //     }
+            //   },
+            //   onColorTap: (color) {
+            //     if (_color != color) {
+            //       setState(() {
+            //         _color = color;
+            //       });
+            //     } else {
+            //       setState(() {
+            //         _color = null;
+            //       });
+            //     }
+            //   },
+            //   onSliderChange: (value) {
+            //     setState(() {
+            //       _priceBegin = value.start;
+            //       _priceEnd = value.end;
+            //     });
+            //   },
+            //   onCompleteTap: () {
+            //     BlocProvider.of<CategoryPrimaryBloc>(context).add(
+            //         FilterCategoryPrimary(
+            //             _category, _size, _color, _priceBegin, _priceEnd));
+            //     Get.back();
+            //   },
+            // ),
+            body: Container(
+              child: Column(
+                children: [
+                  _buildAppbar(),
+                  _buildPrimaryCategory(state),
+                  Expanded(child: _buildContent())
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    ));
     return SafeArea(
         child: BlocBuilder<PostCategoryProductBloc, PostCategoryProductState>(
       builder: (context, state) {
@@ -393,7 +473,7 @@ class _CategoryPrimaryScreenState extends State<CategoryPrimaryScreen> {
   //   return SizedBox();
   // }
   //
-  Widget _buildPrimaryCategory( state) {
+  Widget _buildPrimaryCategory(PostCategoryProductState state) {
     return Stack(
       children: [
         Positioned.fill(
@@ -408,16 +488,16 @@ class _CategoryPrimaryScreenState extends State<CategoryPrimaryScreen> {
               child: Container(
                   height: AppValue.ACTION_BAR_HEIGHT,
                   child: ScrollablePositionedList.builder(
-                    initialScrollIndex: state.data.category
+                    initialScrollIndex: state.post
                         .indexOf(_category) !=
                         -1
-                        ? state.data.category.indexOf(_category)
+                        ? state.post.indexOf(_category)
                         : 0,
                     itemScrollController: _primaryScrollController,
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) {
                       return WidgetTabBar(
-                        category: state.data.category[index],
+                        category: state.post[index],
                         onTap: (Category category) {
                           setState(() {
                             _category = category;
@@ -433,11 +513,11 @@ class _CategoryPrimaryScreenState extends State<CategoryPrimaryScreen> {
                         },
                         style: AppStyle.DEFAULT_MEDIUM,
                         isChoose: _category ==
-                            state.data.category[index],
+                            state.post[index],
                       );
                     },
                     physics: BouncingScrollPhysics(),
-                    itemCount: state.data.category.length,
+                    itemCount: state.post.length,
                   )),
             ),
             const SizedBox(
