@@ -69,11 +69,13 @@ class _CategoryPrimaryScreenState extends State<CategoryPrimaryScreen> {
   void initState() {
     super.initState();
     _onArgument();
-    BlocProvider.of<PostCategoryProductBloc>(context).add(LoadCategoryProduct());
+
+    BlocProvider.of<PostCategoryProductBloc>(context).add(LoadCategoryProduct()); //can them ham load du lieu
   }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      //truyen sai phuong thuc vi trong cai danh muc e dang tao 1 phuong thuc loading du lieu,kiem tra du lieu len khong the tao ham bloc load nhu du lieu cua a dc
         child: BlocListener<PostCategoryProductBloc, PostCategoryProductState>(
       listener: (context, state) async {
         if (state.isLoading) {
@@ -93,6 +95,7 @@ class _CategoryPrimaryScreenState extends State<CategoryPrimaryScreen> {
       },
       child: BlocBuilder<PostCategoryProductBloc, PostCategoryProductState>(
         builder: (context, state) {
+          /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
           return Scaffold(
             key: _drawerKey,
             backgroundColor: Colors.white,
