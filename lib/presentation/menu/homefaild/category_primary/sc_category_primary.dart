@@ -477,79 +477,87 @@ class _CategoryPrimaryScreenState extends State<CategoryPrimaryScreen> {
   // }
   //
   Widget _buildPrimaryCategory(PostCategoryProductState state) {
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: _buildDotLine(),
+    if (state?.post?.length != null) {
+      return Stack(
+        children: [
+          Positioned.fill(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: _buildDotLine(),
+            ),
           ),
-        ),
-        Row(
-          children: [
-            Expanded(
-              child: Container(
-                  height: AppValue.ACTION_BAR_HEIGHT,
-                  child: ScrollablePositionedList.builder(
-                    initialScrollIndex: state.post
-                        .indexOf(_category) !=
-                        -1
-                        ? state.post.indexOf(_category)
-                        : 0,
-                    itemScrollController: _primaryScrollController,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      return WidgetTabBar(
-                        category: state.post[index],
-                        onTap: (Category category) {
-                          setState(() {
-                            _category = category;
-                          });
-                          BlocProvider.of<CategoryPrimaryBloc>(context).add(
-                              ChangeCategoryPrimary(_category, _size, _color,
-                                  _priceBegin, _priceEnd));
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                    height: AppValue.ACTION_BAR_HEIGHT,
+                    child: ScrollablePositionedList.builder(
+                      initialScrollIndex: state.post
+                          .indexOf(_category) !=
+                          -1
+                          ? state.post.indexOf(_category)
+                          : 0,
+                      itemScrollController: _primaryScrollController,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) {
+                        return WidgetTabBar(
+                          category: state.post[index],
+                          onTap: (Category category) {
+                            setState(() {
+                              _category = category;
+                            });
+                            BlocProvider.of<CategoryPrimaryBloc>(context).add(
+                                ChangeCategoryPrimary(_category, _size, _color,
+                                    _priceBegin, _priceEnd));
 
-                          _primaryScrollController.scrollTo(
-                              index: index,
-                              duration: Duration(milliseconds: 200),
-                              curve: Curves.linear);
-                        },
-                        style: AppStyle.DEFAULT_MEDIUM,
-                        isChoose: _category ==
-                            state.post[index],
-                      );
-                    },
-                    physics: BouncingScrollPhysics(),
-                    itemCount: state.post.length,
-                  )),
-            ),
-            const SizedBox(
-              width: 4,
-            ),
-            Container(
-              width: AppValue.ACTION_BAR_HEIGHT,
-              height: AppValue.ACTION_BAR_HEIGHT,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(color: AppColor.GREY_LIGHTER_3, spreadRadius: .2, blurRadius: 20)
-                ],
+                            _primaryScrollController.scrollTo(
+                                index: index,
+                                duration: Duration(milliseconds: 200),
+                                curve: Curves.linear);
+                          },
+                          style: AppStyle.DEFAULT_MEDIUM,
+                          isChoose: _category ==
+                              state.post[index],
+                        );
+                      },
+                      physics: BouncingScrollPhysics(),
+                      itemCount: state.post.length,
+                    )),
               ),
-              child: Container(
-                width: AppValue.ACTION_BAR_HEIGHT * 0.85,
-                height: AppValue.ACTION_BAR_HEIGHT * 0.85,
-                child: WidgetAppbarMenu(
-                  icon: Image.asset('assets/images/img_filter.png'),
-                  onTap: () {
-                    _drawerKey.currentState.openEndDrawer();
-                  },
+              const SizedBox(
+                width: 4,
+              ),
+              Container(
+                width: AppValue.ACTION_BAR_HEIGHT,
+                height: AppValue.ACTION_BAR_HEIGHT,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(color: AppColor.GREY_LIGHTER_3,
+                        spreadRadius: .2,
+                        blurRadius: 20)
+                  ],
                 ),
-              ),
-            )
-          ],
-        ),
-      ],
-    );
+                child: Container(
+                  width: AppValue.ACTION_BAR_HEIGHT * 0.85,
+                  height: AppValue.ACTION_BAR_HEIGHT * 0.85,
+                  child: WidgetAppbarMenu(
+                    icon: Image.asset('assets/images/img_filter.png'),
+                    onTap: () {
+                      _drawerKey.currentState.openEndDrawer();
+                    },
+                  ),
+                ),
+              )
+            ],
+          ),
+        ],
+      );
+    }else{
+      Container(
+        child: Text("Vui lòng đợi laod dữ liệu"),
+      );
+    }
   }
 
   Widget _buildDotLine() => DottedBorder(
